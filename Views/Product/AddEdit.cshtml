@@ -1,0 +1,459 @@
+﻿@* @using restaurant_prf.Models.TequilasRestaurant.Models
+@model Product
+
+@{
+    ViewBag.Title = $"{ViewBag.Operation} Menu Item";
+}
+
+<h1>@ViewBag.Operation Menu Item</h1>
+
+<form asp-action="AddEdit" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="ProductId" />
+
+    <!-- Product Name -->
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <!-- Description -->
+    <div class="form-group">
+        <label asp-for="Description"></label>
+        <input asp-for="Description" class="form-control" />
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <!-- Price -->
+    <div class="form-group">
+        <label asp-for="Price"></label>
+        <input asp-for="Price" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+
+    <!-- Stock -->
+    <div class="form-group">
+        <label asp-for="Stock">Quantity in stock</label>
+        <input asp-for="Stock" class="form-control" />
+        <span asp-validation-for="Stock" class="text-danger"></span>
+    </div>
+
+    <!-- Image Upload -->
+    <div class="form-group">
+        <label>Upload Image</label>
+        <input asp-for="ImageFile" type="file" class="form-control" />
+    </div>
+
+    <div class="row mt-3">
+
+        <!-- Categories (Radio Buttons) -->
+        <div class="col-md-6">
+            <h5>Categories</h5>
+
+            @foreach (Category category in ViewBag.Categories)
+            {
+                <div class="form-check">
+                    @{
+                        bool isChecked = Model.CategoryId == category.CategoryId;
+                    }
+
+                    <input type="radio"
+                           class="form-check-input"
+                           id="category_@category.CategoryId"
+                           name="catId"
+                           value="@category.CategoryId"
+                           @(isChecked ? "checked" : "") />
+
+                    <label class="form-check-label" for="category_@category.CategoryId">
+                        @category.Name
+                    </label>
+                </div>
+            }
+        </div>
+
+        <!-- Ingredients (Checkboxes) -->
+        <div class="col-md-6">
+            <h5>Ingredients</h5>
+
+            @foreach (Ingredient ingredient in ViewBag.Ingredients)
+            {
+                <div class="form-check">
+                    @{
+                        bool isChecked = Model.ProductIngredients != null &&
+                        Model.ProductIngredients.Any(i => i.IngredientId == ingredient.IngredientId);
+                    }
+
+                    <input type="checkbox"
+                           class="form-check-input"
+                           id="ingredient_@ingredient.IngredientId"
+                           name="ingredientIds"
+                           value="@ingredient.IngredientId"
+                           @(isChecked ? "checked" : "") />
+
+                    <label class="form-check-label" for="ingredient_@ingredient.IngredientId">
+                        @ingredient.Name
+                    </label>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="mt-4">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a asp-action="Index" asp-controller="Product" class="btn btn-outline-dark">Cancel</a>
+    </div>
+</form> *@
+
+
+ @* new codde  *@
+
+@using restaurant_prf.Models.TequilasRestaurant.Models
+@model Product
+
+@{
+    ViewBag.Title = $"{ViewBag.Operation} Menu Item";
+    bool isEdit = ViewBag.Operation == "Edit";
+}
+
+<!-- Page Header -->
+<div class="page-header mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="mb-2">
+                @if (isEdit)
+                {
+                    <i class="bi bi-pencil-square me-2"></i>
+                }
+                else
+                {
+                    <i class="bi bi-plus-circle me-2"></i>
+                }
+                @ViewBag.Operation Menu Item
+            </h1>
+            <p class="mb-0 opacity-75">
+                @if (isEdit)
+                {
+                    <span>Update details for "<strong>@Model.Name</strong>"</span>
+                }
+                else
+                {
+                    <span>Add a new item to your restaurant menu</span>
+                }
+            </p>
+        </div>
+        <a asp-action="Index" asp-controller="Product" class="btn btn-outline-light">
+            <i class="bi bi-arrow-left me-2"></i>Back to Menu
+        </a>
+    </div>
+</div>
+
+<!-- Main Form -->
+<form asp-action="AddEdit" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="ProductId" />
+
+    <div class="row g-4">
+        <!-- Left Column - Basic Details -->
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="bi bi-info-circle me-2"></i>Basic Information
+                </div>
+                <div class="card-body p-4">
+                    <!-- Product Name -->
+                    <div class="mb-4">
+                        <label asp-for="Name" class="form-label">
+                            <i class="bi bi-tag me-1"></i>Product Name
+                        </label>
+                        <input asp-for="Name" class="form-control" placeholder="Enter product name..." />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-4">
+                        <label asp-for="Description" class="form-label">
+                            <i class="bi bi-text-paragraph me-1"></i>Description
+                        </label>
+                        <textarea asp-for="Description" class="form-control" rows="3"
+                                  placeholder="Enter product description..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row">
+                        <!-- Price -->
+                        <div class="col-md-6 mb-4">
+                            <label asp-for="Price" class="form-label">
+                                <i class="bi bi-currency-dollar me-1"></i>Price
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input asp-for="Price" class="form-control" placeholder="0.00" />
+                            </div>
+                            <span asp-validation-for="Price" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Stock -->
+                        <div class="col-md-6 mb-4">
+                            <label asp-for="Stock" class="form-label">
+                                <i class="bi bi-box-seam me-1"></i>Quantity in Stock
+                            </label>
+                            <input asp-for="Stock" class="form-control" placeholder="Enter quantity..." />
+                            <span asp-validation-for="Stock" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories & Ingredients -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-collection me-2"></i>Categories & Ingredients
+                </div>
+                <div class="card-body p-4">
+                    <div class="row">
+                        <!-- Categories (Radio Buttons) -->
+                        <div class="col-md-6 mb-4 mb-md-0">
+                            <h6 class="fw-bold mb-3">
+                                <i class="bi bi-bookmark me-2 text-primary"></i>Select Category
+                            </h6>
+                            <div class="category-list">
+                                @foreach (Category category in ViewBag.Categories)
+                                {
+                                    bool isChecked = Model.CategoryId == category.CategoryId;
+                                    <div class="form-check category-item p-3 rounded mb-2 @(isChecked ? "selected" : "")">
+                                        <input type="radio"
+                                               class="form-check-input"
+                                               id="category_@category.CategoryId"
+                                               name="catId"
+                                               value="@category.CategoryId"
+                                               @(isChecked ? "checked" : "") />
+                                        <label class="form-check-label w-100" for="category_@category.CategoryId">
+                                            <i class="bi bi-folder me-2"></i>@category.Name
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Ingredients (Checkboxes) -->
+                        <div class="col-md-6">
+                            <h6 class="fw-bold mb-3">
+                                <i class="bi bi-egg-fried me-2 text-success"></i>Select Ingredients
+                            </h6>
+                            <div class="ingredient-list" style="max-height: 300px; overflow-y: auto;">
+                                @foreach (Ingredient ingredient in ViewBag.Ingredients)
+                                {
+                                    bool isChecked = Model.ProductIngredients != null &&
+                                    Model.ProductIngredients.Any(i => i.IngredientId == ingredient.IngredientId);
+                                    <div class="form-check ingredient-item p-3 rounded mb-2 @(isChecked ? "selected" : "")">
+                                        <input type="checkbox"
+                                               class="form-check-input"
+                                               id="ingredient_@ingredient.IngredientId"
+                                               name="ingredientIds"
+                                               value="@ingredient.IngredientId"
+                                               @(isChecked ? "checked" : "") />
+                                        @* <label class="form-check-label w-100" for="ingredient_@ingredient.IngredientId">
+                                            <i class="bi bi-dot me-1"></i>@ingredient.Name
+                                        </label> *@
+                                        <label class="form-check-label w-100 ms-2" for="ingredient_@ingredient.IngredientId">
+                                            @ingredient.Name
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column - Image & Actions -->
+        <div class="col-lg-4">
+            <!-- Image Upload Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="bi bi-image me-2"></i>Product Image
+                </div>
+                <div class="card-body p-4">
+                    <!-- Image Preview -->
+                    @if (isEdit && !string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <div class="mb-3 text-center">
+                            <p class="text-muted small mb-2">Current Image:</p>
+                            <img src="@Url.Content("~/images/" + Model.ImageUrl)"
+                                 class="img-fluid rounded shadow-sm"
+                                 alt="@Model.Name"
+                                 style="max-height: 200px; object-fit: cover;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center mb-3 p-4 bg-light rounded">
+                            <i class="bi bi-image display-4 text-muted"></i>
+                            <p class="text-muted small mb-0 mt-2">No image uploaded</p>
+                        </div>
+                    }
+
+                    <!-- File Upload -->
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-upload me-1"></i>
+                            @(isEdit ? "Upload New Image" : "Upload Image")
+                        </label>
+                        <input asp-for="ImageFile" type="file" class="form-control" accept="image/*" />
+                        <small class="text-muted">Supported formats: JPG, PNG, GIF</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="bi bi-lightning-charge me-2"></i>Actions
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-grid gap-3">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="bi bi-check-circle me-2"></i>
+                            @(isEdit ? "Update Item" : "Create Item")
+                        </button>
+                        <a asp-action="Index" asp-controller="Product" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle me-2"></i>Cancel
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tips Card -->
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <i class="bi bi-lightbulb text-warning me-2"></i>Tips
+                    </h6>
+                    <ul class="text-muted small mb-0 ps-3">
+                        <li class="mb-2">Use clear and appetizing product names</li>
+                        <li class="mb-2">Write a detailed description to attract customers</li>
+                        <li class="mb-2">Set competitive prices</li>
+                        <li class="mb-2">Upload high-quality food images</li>
+                        <li>Select all applicable ingredients</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- Custom Styles -->
+<style>
+    .category-item,
+    .ingredient-item {
+        background-color: #f8f9fa;
+        border: 2px solid #e9ecef;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+        .category-item:hover,
+        .ingredient-item:hover {
+            background-color: #e9ecef;
+            border-color: #dee2e6;
+        }
+
+        .category-item.selected,
+        .ingredient-item.selected {
+            background-color: #e7f1ff;
+            border-color: #2a5298;
+        }
+
+        .category-item .form-check-input,
+        .ingredient-item .form-check-input {
+            cursor: pointer;
+        }
+
+        .category-item .form-check-label,
+        .ingredient-item .form-check-label {
+            cursor: pointer;
+        }
+
+        /* NEW - Checkbox styling */
+        .ingredient-item .form-check-input {
+            width: 22px;
+            height: 22px;
+            margin-top: 0;
+            margin-right: 12px;
+            border: 2px solid #adb5bd;
+        }
+
+            .ingredient-item .form-check-input:checked {
+                background-color: #2a5298;
+                border-color: #2a5298;
+            }
+
+        .ingredient-item.selected .form-check-input {
+            border-color: #2a5298;
+        }
+
+        /* NEW - Fix alignment */
+        .ingredient-item.form-check {
+            display: flex;
+            align-items: center;
+        }
+
+    .input-group-text {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: white;
+        border: none;
+    }
+
+    .ingredient-list::-webkit-scrollbar {
+        width: 9px;
+    }
+
+    .ingredient-list::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+    }
+
+    .ingredient-list::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 3px;
+    }
+
+        .ingredient-list::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+</style>
+
+<!-- Script for interactive selection -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Category selection highlight
+        document.querySelectorAll('.category-item input[type="radio"]').forEach(function (radio) {
+            radio.addEventListener('change', function () {
+                document.querySelectorAll('.category-item').forEach(function (item) {
+                    item.classList.remove('selected');
+                });
+                if (this.checked) {
+                    this.closest('.category-item').classList.add('selected');
+                }
+            });
+        });
+
+        // Ingredient selection highlight
+        document.querySelectorAll('.ingredient-item input[type="checkbox"]').forEach(function (checkbox) {
+            checkbox.addEventListener('change', function () {
+                if (this.checked) {
+                    this.closest('.ingredient-item').classList.add('selected');
+                } else {
+                    this.closest('.ingredient-item').classList.remove('selected');
+                }
+            });
+        });
+    });
+</script>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

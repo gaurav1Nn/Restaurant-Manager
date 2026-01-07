@@ -1,0 +1,97 @@
+﻿@* @model Ingredient
+@{
+    ViewBag.Title = "Create Ingredient";
+}
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" method="post">
+            <div class="form-group">
+                <label asp-for="Name"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">Create</button>
+            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        </form>
+    </div>
+</div> *@
+
+@* new code  *@
+
+@model Ingredient
+
+@{
+    ViewBag.Title = "Create Ingredient";
+}
+
+<!-- Page Header -->
+<div class="page-header mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="mb-2">
+                <i class="bi bi-plus-circle me-2"></i>Create Ingredient
+            </h1>
+            <p class="mb-0 opacity-75">Add a new ingredient to your inventory</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-light">
+            <i class="bi bi-arrow-left me-2"></i>Back to List
+        </a>
+    </div>
+</div>
+
+<!-- Create Form Card -->
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-egg-fried me-2"></i>Ingredient Details
+            </div>
+            <div class="card-body p-4">
+                <form asp-action="Create" method="post">
+                    <!-- Ingredient Name -->
+                    <div class="mb-4">
+                        <label asp-for="Name" class="form-label">
+                            <i class="bi bi-tag me-1"></i>Ingredient Name
+                        </label>
+                        <input asp-for="Name" class="form-control" placeholder="Enter ingredient name..." />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Divider -->
+                    <hr class="my-4">
+
+                    <!-- Buttons -->
+                    <div class="d-flex gap-3">
+                        <button type="submit" class="btn btn-success flex-grow-1">
+                            <i class="bi bi-check-circle me-2"></i>Create Ingredient
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="bi bi-x-circle me-2"></i>Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Help Card -->
+        <div class="card mt-4">
+            <div class="card-body">
+                <h6 class="card-title">
+                    <i class="bi bi-lightbulb text-warning me-2"></i>Tips
+                </h6>
+                <ul class="text-muted small mb-0">
+                    <li>Use clear and descriptive names for ingredients</li>
+                    <li>Check if the ingredient already exists before adding</li>
+                    <li>Ingredient names should be unique</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

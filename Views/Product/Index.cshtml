@@ -1,0 +1,309 @@
+﻿@* @model IEnumerable<Product>
+
+@{
+    ViewBag.Title = "Tequilas Menu Items ";
+}
+@functions {
+    private string GetDeleteModalId(Product prod)
+    {
+        return "#deleteModal"  + prod.ProductId;
+    }
+    string GetModalId(Product prod)
+    {
+        return "deleteModal" + prod.ProductId;
+    }
+}
+<h2> Menu Items</h2>
+<a asp-action="AddEdit" asp-controller="Product" class="btn btn-primary"> Create new Item</a>
+
+<div class="row">
+    @foreach (Product prod in Model)
+    {
+        <div class="col-md-4">
+            <form asp-action="delete" asp-controller="product" method="post">
+                <input type="hidden" name="id" value="@prod.ProductId" />
+                <div class="card" style="width: 18rem;">
+                    <img src="@Url.Content("~/images/" + prod?.ImageUrl)"
+                         class="card-img-top fixed-image-height"
+                         alt="@prod.Description">
+                    <div class="card-body">
+                        <h5 class="card-title">@prod.Name</h5>
+                        <p class="card-text">@prod.Description</p>
+                        <p class="card-text">@prod.Price.ToString("C")</p>
+                        <p class="card-text">Quantity In Stock: @prod.Stock</p>
+                        <a class="btn btn-info" asp-controller="Product" asp-action="AddEdit"
+                           asp-route-id="@prod.ProductId"><i class="bi bi-pencil-fill"></i>Edit</a>
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-tarfet="@GetDeleteModalId(prod)" >
+                            <i class="bi bi-trash">Delete</i>
+                        </button>
+                        <div class="modal fade"
+                             id="@GetModalId(prod)" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                             tabindex="-1"
+                             aria-labelledby="exampleModalLabel"
+                             aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">
+                                            Are you sure you want to delete @prod.Name ?
+                                        </h1>
+                                        <button type="button"
+                                                class="btn-close"
+                                                data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        ...
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button"
+                                                class="btn btn-secondary"
+                                                data-bs-dismiss="modal">
+                                            Cancel
+                                        </button>
+                                        <button type="submit"
+                                                class="btn btn-danger">
+                                            Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    }
+</div> *@
+
+@* 
+new code  *@
+
+@model IEnumerable<Product>
+
+@{
+    ViewBag.Title = "Tequilas Menu Items";
+}
+
+@functions {
+    private string GetDeleteModalId(Product prod)
+    {
+        return "#deleteModal" + prod.ProductId;
+    }
+
+    string GetModalId(Product prod)
+    {
+        return "deleteModal" + prod.ProductId;
+    }
+}
+
+<!-- Page Header -->
+<div class="page-header mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="mb-2">
+                <i class="bi bi-menu-button-wide me-2"></i>Menu Items
+            </h1>
+            <p class="mb-0 opacity-75">Manage your restaurant's menu items and prices</p>
+        </div>
+        <a asp-action="AddEdit" asp-controller="Product" class="btn btn-success btn-lg">
+            <i class="bi bi-plus-circle me-2"></i>Add New Item
+        </a>
+    </div>
+</div>
+
+<!-- Stats Bar -->
+@if (Model.Any())
+{
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body d-flex align-items-center">
+                    <i class="bi bi-box-seam display-6 me-3"></i>
+                    <div>
+                        <h3 class="mb-0">@Model.Count()</h3>
+                        <small>Total Items</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body d-flex align-items-center">
+                    <i class="bi bi-check-circle display-6 me-3"></i>
+                    <div>
+                        <h3 class="mb-0">@Model.Count(p => p.Stock > 0)</h3>
+                        <small>In Stock</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-danger text-white">
+                <div class="card-body d-flex align-items-center">
+                    <i class="bi bi-exclamation-circle display-6 me-3"></i>
+                    <div>
+                        <h3 class="mb-0">@Model.Count(p => p.Stock == 0)</h3>
+                        <small>Out of Stock</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Product Cards -->
+@if (Model.Any())
+{
+    <div class="row g-4">
+        @foreach (Product prod in Model)
+        {
+            <div class="col-lg-4 col-md-6">
+                <form asp-action="Delete" asp-controller="Product" method="post">
+                    <input type="hidden" name="id" value="@prod.ProductId" />
+
+                    <div class="card h-100 product-card">
+                        <!-- Product Image -->
+                        <div class="position-relative">
+                            <img src="@Url.Content("~/images/" + prod?.ImageUrl)"
+                                 class="card-img-top fixed-image-height"
+                                 alt="@prod.Description">
+
+                            <!-- Stock Badge -->
+                            @if (prod.Stock == 0)
+                            {
+                                <span class="badge bg-danger position-absolute top-0 end-0 m-2">
+                                    <i class="bi bi-x-circle me-1"></i>Out of Stock
+                                </span>
+                            }
+                            else if (prod.Stock <= 5)
+                            {
+                                <span class="badge bg-warning position-absolute top-0 end-0 m-2">
+                                    <i class="bi bi-exclamation-triangle me-1"></i>Low Stock
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success position-absolute top-0 end-0 m-2">
+                                    <i class="bi bi-check-circle me-1"></i>In Stock
+                                </span>
+                            }
+                        </div>
+
+                        <!-- Card Body -->
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title fw-bold text-primary">@prod.Name</h5>
+                            <p class="card-text text-muted small flex-grow-1">@prod.Description</p>
+
+                            <!-- Price & Stock Info -->
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="h4 mb-0 text-success fw-bold">
+                                    @prod.Price.ToString("C")
+                                </span>
+                                <span class="badge bg-light text-dark">
+                                    <i class="bi bi-box me-1"></i>@prod.Stock in stock
+                                </span>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="d-flex gap-2">
+                                <a class="btn btn-warning flex-grow-1"
+                                   asp-controller="Product"
+                                   asp-action="AddEdit"
+                                   asp-route-id="@prod.ProductId">
+                                    <i class="bi bi-pencil-fill me-1"></i>Edit
+                                </a>
+                                <button type="button"
+                                        class="btn btn-danger flex-grow-1"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="@GetDeleteModalId(prod)">
+                                    <i class="bi bi-trash me-1"></i>Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Delete Confirmation Modal -->
+                    <div class="modal fade"
+                         id="@GetModalId(prod)"
+                         tabindex="-1"
+                         aria-labelledby="deleteModalLabel@prod.ProductId"
+                         aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header bg-danger text-white">
+                                    <h5 class="modal-title" id="deleteModalLabel@prod.ProductId">
+                                        <i class="bi bi-exclamation-triangle me-2"></i>Confirm Delete
+                                    </h5>
+                                    <button type="button"
+                                            class="btn-close btn-close-white"
+                                            data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body text-center py-4">
+                                    <i class="bi bi-trash display-1 text-danger mb-3"></i>
+                                    <h5>Are you sure you want to delete?</h5>
+                                    <p class="text-muted mb-0">
+                                        "<strong>@prod.Name</strong>" will be permanently removed.
+                                    </p>
+                                    <p class="text-muted small">This action cannot be undone.</p>
+                                </div>
+                                <div class="modal-footer justify-content-center">
+                                    <button type="button"
+                                            class="btn btn-secondary px-4"
+                                            data-bs-dismiss="modal">
+                                        <i class="bi bi-x-circle me-1"></i>Cancel
+                                    </button>
+                                    <button type="submit" class="btn btn-danger px-4">
+                                        <i class="bi bi-trash me-1"></i>Yes, Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <!-- Empty State -->
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <i class="bi bi-menu-button-wide display-1 text-muted mb-3"></i>
+            <h4 class="text-muted">No Menu Items Found</h4>
+            <p class="text-muted mb-4">Start by adding your first menu item to the restaurant.</p>
+            <a asp-action="AddEdit" asp-controller="Product" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-2"></i>Add First Item
+            </a>
+        </div>
+    </div>
+}
+
+<!-- Custom Styles -->
+<style>
+    .product-card {
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+            .product-card:hover .card-img-top {
+                transform: scale(1.05);
+            }
+
+        .product-card .card-img-top {
+            transition: transform 0.3s ease;
+        }
+
+        .product-card .badge {
+            font-size: 0.75rem;
+        }
+</style>
